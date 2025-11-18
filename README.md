@@ -1,2 +1,0 @@
-# Jozocrut.github.io
-PWA
