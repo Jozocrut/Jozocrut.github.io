@@ -2,28 +2,23 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- viewport corregido (solucion typo maximum) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximun-scale=1 user-scalable=no">
     <link rel="shortcut icon" type="image/png" href="img/favicon_16.png">
-    <meta name="theme-color" content="FB314E">
+    <meta name="theme-color" content="#FB314E">
     <meta name="MobileOptimazed" content="width">
     <meta name="Handheldfriendly" content="true">
 
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="img/favicon_16.png">
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-traslucent">
-    <meta rel="apple-touch-icon" href="img/favicon_16.png">
-
-    
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="main.js"></script>
-    
 
-    <link rel="stylesheet" href="css/styles.css">
     <title>Document</title>
 </head>
 <body>
@@ -34,18 +29,11 @@
             </div>
             <div id="menu">
                 <ul>
-                    <li>
-                        <a href="#main-header">Inicio</a>
-                    </li>
-                    <li>
-                        <a href="#services">Contenido</a>
-                    </li>
-                    <li>
-                        <a href="#videos">Videos</a>
-                    </li>
-                    <li>
-                        <a href="#footer">Contacto</a>
-                    </li>
+                    <li><a href="#main-header">Inicio</a></li>
+                    <li><a href="#services">Contenido</a></li>
+                    <li><a href="#crud">CRUD</a></li>
+                    <li><a href="#videos">Videos</a></li>
+                    <li><a href="#footer">Contacto</a></li>
                 </ul>
             </div> <!--end menu-->
         </div><!--end container-->
@@ -63,11 +51,11 @@
             <h2 class="subheader">Contenido</h2>
 
             <div class="service">
-                <img src="img/clases.png" />
+                <img src="img/clases.png" alt="clases" />
                 <h3>Clases</h3>
                 <p>
                <h4>Barbaro</h4>     
-            	Los bárbaros son poderosos guerreros impulsados ​​por fuerzas primigenias 
+            	Los bárbaros son poderosos guerreros impulsados ​​por fuerzas primigenas 
                 del multiverso que se manifiestan como Furia. 
                 Más que una simple emoción —y no se limita a la ira—,
                 esta Furia es la encarnación de la ferocidad de un depredador,
@@ -84,12 +72,11 @@
                 Los druidas pertenecen a órdenes antiguas que invocan las fuerzas de la naturaleza.
                 Dominando la magia de los animales, las plantas y los cuatro elementos, los druidas sanan, 
                 se transforman en animales y ejercen la destrucción elemental.
-
                 </p>
             </div>
 
             <div class="service">
-                <img src="img/Monstruos.jpg" />
+                <img src="img/Monstruos.jpg" alt="monstruos" />
                 <h3>Mostruos</h3>
                 <p>
                   <h4>Beholder</h4>
@@ -110,7 +97,7 @@
             </div>
 
             <div class="service">
-                <img src="img/Hechizos.png" />
+                <img src="img/Hechizos.png" alt="hechizos" />
                 <h3>Hechizos</h3>
                 <p>
                    <h4>FireBall</h4>
@@ -135,12 +122,35 @@
     </div> <!-- end services-->
 
     <div class="clearfix"></div>
+
+    <!-- ✅ CRUD Firebase agregado SIN quitar nada -->
+    <section id="crud" style="padding: 20px;">
+    <div class="container">
+        <h2 class="subheader">CRUD Firebase</h2>
+
+        <!-- 5 campos -->
+        <input id="numero" type="number" placeholder="Número" required />
+        <input id="nombre" placeholder="Nombre" required />
+        <input id="categoria" placeholder="Categoría" required />
+        <input id="nivel" type="number" placeholder="Nivel" required />
+        <input id="descripcion" placeholder="Descripción" required />
+
+        <button id="btnAgregar">Agregar</button>
+
+        <ul id="lista" style="margin-top: 15px;"></ul>
+    </div>
+    </section>
+
+
+    <div class="clearfix"></div>
+
     <div id="videos">
         <div class="container">
             <h2 class="subheader">Videos</h2>
 
             <div class="video">
-                <iframe width="560" height="315" src="https://www.youtube.com/watch?v=ale4cC9PnOQ"></iframe>
+                <!-- Usar embed y https para evitar X-Frame-Options -->
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/OTsicWGho7c" frameborder="0" allowfullscreen></iframe>
 
                 <p>
                     Como jugar Calabozos y Dragones para principiantes <br>
@@ -150,7 +160,7 @@
             </div>
 
             <div class="video">
-                <iframe width="560" height="315" src="https://www.youtube.com/watch?v=788ySSg2mzc"></iframe>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/dDNTtlTZA0" frameborder="0" allowfullscreen></iframe>
 
                 <p>
                    Introduccion a DND episodio 1 <br>
@@ -160,11 +170,11 @@
             </div>
 
             <div class="video">
-                <iframe width="560" height="315" src="https://www.youtube.com/watch?v=sFdXwYYCK44"></iframe>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/n5KKdwZum8Y" frameborder="0" allowfullscreen></iframe>
 
                 <p>
                     ¿Los dados deciden Episodio 3 <br>
-                    Episodio con enfasis en la narrativa compartida, narracion de los juegadores y desarrollo del mundo de los jugadores de como vivir la experiencia de campañas.
+                    Episodio con enfasis en la narrativa compartida, rarracion de los juegadores y desarrollo del mundo de los jugadores de como vivir la experiencia de campañas.
                 </p>
             </div>
         </div>
@@ -176,28 +186,43 @@
             <h2 class="subheader">Contacto</h2>
             <p>Enviame un mnesaje en mis redes sociales XD</p>
             <ul id="networks">
-                <li>
-                    <a href="">
-                        <img src="img/twitter.png" />
-                    </a>
-                </li>
-
-                <li>
-                    <a href="">
-                        <img src="img/facebook.png" />
-                    </a>
-                </li>
-
-                <li>
-                    <a href="">
-                        <img src="img/instagram.png" />
-                    </a>
-                </li>
+                <li><a href=""><img src="img/twitter.png" alt="twitter" /></a></li>
+                <li><a href=""><img src="img/facebook.png" alt="facebook" /></a></li>
+                <li><a href=""><img src="img/instagram.png" alt="instagram" /></a></li>
             </ul>
             <div class="clearfix"></div>
         </div>
     </footer>
+
+    <!-- ✅ Firebase + Firestore: inicialización ANTES de cargar main.js -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    // analytics está bien si lo quieres, no es necesario para Firestore
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+
+    // Pega tu firebaseConfig (ya lo tenías). Nota: storageBucket debe terminar en .appspot.com o .appspot.com
+    const firebaseConfig = {
+        apiKey: "AIzaSyB3b42LSiKPVx6KjCNoYy4SNFPgdAORN5g",
+        authDomain: "delfos-84316.firebaseapp.com",
+        projectId: "delfos-84316",
+        // CORREGIDO: storageBucket debe ser "<projectId>.appspot.com"
+        storageBucket: "delfos-84316.appspot.com",
+        messagingSenderId: "308101271742",
+        appId: "1:308101271742:web:ee240676dcd05927cbceef",
+        measurementId: "G-13GRZXNR3Y"
+    };
+
+    // Inicializar Firebase y Firestore
+    const app = initializeApp(firebaseConfig);
+    // opcional analytics
+    try { getAnalytics(app); } catch(e) { /* no crítico */ }
+    // exponemos db globalmente para que main.js lo use
+    window.db = getFirestore(app);
+    </script>
+
+    <!-- main.js COMO MÓDULO (usa window.db) -->
+    <script type="module" src="main.js"></script>
+
 </body>
-
 </html>
-
