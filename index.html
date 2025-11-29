@@ -237,5 +237,14 @@ if ("serviceWorker" in navigator) {
 
 
 </body>
+	<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/firebase-messaging-sw.js")
+        .then(() => console.log("SW de FCM registrado"))
+        .catch(err => console.log("Error SW FCM", err));
+}
+</script>
+
 </html>
+
 
