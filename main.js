@@ -1,17 +1,22 @@
-// main.js (módulo — importa Firestore desde v12)
+// ---------- FIRESTORE (CRUD) ----------
 import { 
   collection, addDoc, deleteDoc, doc, onSnapshot 
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// Asegurarse que window.db existe
-if (typeof window.db === "undefined") {
-  console.error("La variable global db no está definida. Revisa que Firebase se inicialice ANTES de main.js");
+// ---------- MESSAGING (NOTIFICACIONES) ----------
+import { 
+  getToken, onMessage 
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-messaging.js";
+
+// Asegurarse que Firebase está inicializado
+if (typeof window.db === "undefined" || typeof window.messaging === "undefined") {
+  console.error("Firebase no está inicializado. Revisa index.html");
 }
 
-// referencia a la colección "items"
+// referencia a Firestore
 const itemsRef = collection(window.db, "items");
 
-// Escuchar en tiempo real (muestra al instante)
+// ---------- CRUD: Escuchar cambios en tiempo real ----------
 onSnapshot(itemsRef, (snapshot) => {
   const lista = document.getElementById("lista");
   if (!lista) return;
@@ -19,14 +24,13 @@ onSnapshot(itemsRef, (snapshot) => {
 
   snapshot.forEach(docu => {
     const item = docu.data();
-    // seguridad: comprueba campos
+
     const numero = item.numero ?? "";
     const nombre = item.nombre ?? "";
     const categoria = item.categoria ?? "";
     const nivel = item.nivel ?? "";
     const descripcion = item.descripcion ?? "";
 
-    // linea con botón eliminar
     const li = document.createElement("li");
     li.style = "font-size:18px; margin:6px 0; list-style:none;";
     li.innerHTML = `
@@ -44,7 +48,7 @@ onSnapshot(itemsRef, (snapshot) => {
     lista.appendChild(li);
   });
 
-  // attach event listeners a botones eliminar
+  // botones de eliminar
   document.querySelectorAll(".btn-eliminar").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const id = e.currentTarget.getAttribute("data-id");
@@ -59,7 +63,7 @@ onSnapshot(itemsRef, (snapshot) => {
   });
 });
 
-// función crear: expuesta en window para compatibilidad
+// ---------- CRUD: función crear ----------
 window.crear = async function () {
   const numero = document.getElementById("numero").value.trim();
   const nombre = document.getElementById("nombre").value.trim();
@@ -81,7 +85,6 @@ window.crear = async function () {
       descripcion
     });
 
-    // limpiar inputs
     document.getElementById("numero").value = "";
     document.getElementById("nombre").value = "";
     document.getElementById("categoria").value = "";
@@ -93,13 +96,48 @@ window.crear = async function () {
   }
 };
 
-// alternativa: asociar botón por id (no obligatorio)
+// botón agregar
 const btn = document.getElementById("btnAgregar");
 if (btn) {
   btn.addEventListener("click", () => window.crear());
 }
 
-// Mantener tu smooth scroll original (jQuery)
+// ---------- NOTIFICACIONES PUSH ----------
+
+async function solicitarPermiso() {
+  console.log("Solicitando permiso para notificaciones...");
+
+  const permiso = await Notification.requestPermission();
+  if (permiso !== "granted") {
+      alert("No se otorgó permiso para notificaciones.");
+      return;
+  }
+
+  const token = await getToken(window.messaging, {
+      vapidKey: "BPdlJHTy6fXvmE7nm0j-5l9oEYOz6LyHmLkCkqM_3woXLozwTeVRsYoVezV5CJ6baYkWzmp1EYB3VuSOMqgkpmg"
+  });
+
+  console.log("TOKEN FCM:", token);
+  alert("Token generado (revísalo en consola)");
+
+  // Para guardar el token en Firestore descomenta:
+  // await addDoc(collection(window.db, "tokens"), { token });
+}
+
+// pedir permiso al cargar
+solicitarPermiso();
+
+// cuando la app está abierta y llega un mensaje
+onMessage(window.messaging, (payload) => {
+  console.log("Notificación en foreground:", payload);
+
+  new Notification(payload.notification.title, {
+      body: payload.notification.body,
+      icon: "./img/favicon_192.png"
+  });
+});
+
+// ---------- SMOOTH SCROLL ----------
 $(document).ready(function(){
   $("#menu a").click(function(e){
       e.preventDefault();
