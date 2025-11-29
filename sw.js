@@ -73,5 +73,20 @@ self.addEventListener('fetch', e => {
             return fetch(e.request);
         })
     )
+    self.addEventListener("push", event => {
+    const data = event.data ? event.data.json() : {};
+
+    const title = data.title || "Notificación";
+    const body = data.body || "Contenido de la notificación.";
+
+    event.waitUntil(
+        self.registration.showNotification(title, {
+            body: body,
+            icon: "./img/favicon_192.png"
+        })
+    );
+});
+
 
 });
+
