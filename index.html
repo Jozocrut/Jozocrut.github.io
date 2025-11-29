@@ -194,35 +194,48 @@
         </div>
     </footer>
 
-    <!-- ✅ Firebase + Firestore: inicialización ANTES de cargar main.js -->
-    <script type="module">
+   <!-- 🔥 Firebase + Firestore + Messaging -->
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-    // analytics está bien si lo quieres, no es necesario para Firestore
+    import { getMessaging } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-messaging.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
 
-    // Pega tu firebaseConfig (ya lo tenías). Nota: storageBucket debe terminar en .appspot.com o .appspot.com
     const firebaseConfig = {
         apiKey: "AIzaSyB3b42LSiKPVx6KjCNoYy4SNFPgdAORN5g",
         authDomain: "delfos-84316.firebaseapp.com",
         projectId: "delfos-84316",
-        // CORREGIDO: storageBucket debe ser "<projectId>.appspot.com"
         storageBucket: "delfos-84316.appspot.com",
         messagingSenderId: "308101271742",
         appId: "1:308101271742:web:ee240676dcd05927cbceef",
         measurementId: "G-13GRZXNR3Y"
     };
 
-    // Inicializar Firebase y Firestore
+    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
-    // opcional analytics
-    try { getAnalytics(app); } catch(e) { /* no crítico */ }
-    // exponemos db globalmente para que main.js lo use
-    window.db = getFirestore(app);
-    </script>
 
-    <!-- main.js COMO MÓDULO (usa window.db) -->
-    <script type="module" src="main.js"></script>
+    try { getAnalytics(app); } catch(e) { /* opcional */ }
+
+    // 🔥 Exponer Firestore globalmente
+    window.db = getFirestore(app);
+
+    // 🔥 Exponer Messaging globalmente
+    window.messaging = getMessaging(app);
+</script>
+
+<!-- Tu main.js como módulo -->
+<script type="module" src="main.js"></script>
+
+<!-- Registrar el Service Worker de FCM -->
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/firebase-messaging-sw.js")
+    .then(() => console.log("Service Worker de FCM registrado"))
+    .catch(err => console.error("Error registrando FCM SW:", err));
+}
+</script>
+
 
 </body>
 </html>
+
