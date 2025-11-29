@@ -37,6 +37,12 @@ self.addEventListener('install',e =>{
     );
 });
 
+self.registration.showNotification("Prueba desde SW", {
+    body: "El service worker sí funciona.",
+    icon: "./img/favicon_192.png"
+});
+
+
 self.addEventListener('activate',e =>{
     const cacheWhitelist = [CACHE_NAME];
     e.waitUntil(
@@ -67,4 +73,5 @@ self.addEventListener('fetch', e => {
             return fetch(e.request);
         })
     )
+
 });
