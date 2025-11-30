@@ -228,16 +228,15 @@
 
 <!-- Registrar el Service Worker de FCM -->
 <script>
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/firebase-messaging-sw.js")
-    .then(() => console.log("Service Worker de FCM registrado"))
-    .catch(err => console.error("Error registrando FCM SW:", err));
-}
+navigator.serviceWorker.register("/firebase-messaging-sw.js")
+    .then(() => console.log("SW FCM registrado"))
+    .catch((err) => console.error("Error SW FCM:", err));
 </script>
 
 
 </body>
 </html>
+
 
 
 
