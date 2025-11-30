@@ -125,7 +125,8 @@ async function solicitarPermiso() {
 }
 
 // pedir permiso al cargar
-solicitarPermiso();
+window.addEventListener("click", solicitarPermiso, { once: true });
+
 
 // cuando la app está abierta y llega un mensaje
 onMessage(window.messaging, (payload) => {
@@ -147,3 +148,4 @@ $(document).ready(function(){
       return false;
   });
 });
+
