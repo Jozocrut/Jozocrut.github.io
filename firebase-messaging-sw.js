@@ -12,14 +12,18 @@ firebase.initializeApp({
     appId: "1:308101271742:web:ee240676dcd05927cbceef"
 });
 
-const messaging = firebase.messaging();
-
 messaging.onBackgroundMessage((payload) => {
     console.log("Mensaje recibido en background:", payload);
 
-    self.registration.showNotification(payload.notification.title, {
-        body: payload.notification.body,
+    const notif = payload.notification || payload.data || {};
+
+    const title = notif.title || "Sin título";
+    const body  = notif.body  || "Sin mensaje";
+
+    self.registration.showNotification(title, {
+        body: body,
         icon: "./img/favicon_192.png"
     });
 });
+
 
