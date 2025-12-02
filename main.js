@@ -1,150 +1,183 @@
-// ---------- FIRESTORE ----------
-import { 
-  collection, addDoc, deleteDoc, doc, onSnapshot 
+// ----------------------------------------------
+// IMPORTS FIRESTORE + MESSAGING
+// ----------------------------------------------
+import {
+    collection, addDoc, deleteDoc, doc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// ---------- MESSAGING ----------
-import { 
-  getToken, onMessage 
+import {
+    getMessaging, getToken, onMessage
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-messaging.js";
 
-// Verificar Firebase
-if (!window.db || !window.messaging) {
-  console.error("Firebase no está inicializado");
+
+// ----------------------------------------------
+// VERIFICAR QUE FIREBASE ESTÉ INICIALIZADO
+// ----------------------------------------------
+if (!window.db) {
+    console.error("Firestore no está inicializado. Revisa index.html");
+}
+if (!window.messaging) {
+    // Si no existe, lo creamos aquí
+    window.messaging = getMessaging();
 }
 
 
-// ------------------------------------------------
-// 🔔 FUNCIÓN PARA NOTIFICACIONES NATIVAS
-// ------------------------------------------------
-const showNativeNotification = (title, options) => {
-  if (!("Notification" in window)) return;
-
-  if (Notification.permission === "default") {
-      Notification.requestPermission().then(p => {
-          if (p === "granted") new Notification(title, options);
-      });
-  } else if (Notification.permission === "granted") {
-      new Notification(title, options);
-  }
-};
-
-
-// Colección
+// ----------------------------------------------
+// COLECCIÓN FIRESTORE
+// ----------------------------------------------
 const itemsRef = collection(window.db, "items");
 
 
-// ------------------------------------------------
-// 🔥 CRUD: LISTAR EN TIEMPO REAL
-// ------------------------------------------------
-onSnapshot(itemsRef, (snapshot) => {
-  const lista = document.getElementById("lista");
-  if (!lista) return;
-  lista.innerHTML = "";
+// ----------------------------------------------
+// FUNCIÓN GENERAL DE NOTIFICACIONES
+// ----------------------------------------------
+const showNativeNotification = (title, options = {}) => {
+    if (!("Notification" in window)) return;
 
-  snapshot.forEach(docu => {
-    const item = docu.data();
+    if (Notification.permission === "granted") {
+        new Notification(title, options);
+        return;
+    }
 
-    const li = document.createElement("li");
-    li.style = "font-size:18px; margin:6px 0;";
-    li.innerHTML = `
-      <strong>${item.numero}</strong> - ${item.nombre}<br>
-      <small>${item.categoria} | Nivel: ${item.nivel}</small><br>
-      ${item.descripcion}
-      <button data-id="${docu.id}" class="btn-eliminar">❌</button>
-    `;
-    lista.appendChild(li);
-  });
-
-  // eliminar
-  document.querySelectorAll(".btn-eliminar").forEach(btn => {
-    btn.onclick = async () => {
-      if (!confirm("Eliminar registro?")) return;
-      await deleteDoc(doc(window.db, "items", btn.dataset.id));
-    };
-  });
-});
-
-
-// ------------------------------------------------
-// 🔥 CRUD: CREAR
-// ------------------------------------------------
-window.crear = async () => {
-  const numero = numero.value.trim();
-  const nombre = nombre.value.trim();
-  const categoria = categoria.value.trim();
-  const nivel = nivel.value.trim();
-  const descripcion = descripcion.value.trim();
-
-  if (!numero || !nombre || !categoria || !nivel || !descripcion) {
-    alert("Todos los campos son obligatorios");
-    return;
-  }
-
-  await addDoc(itemsRef, {
-    numero: Number(numero),
-    nombre,
-    categoria,
-    nivel: Number(nivel),
-    descripcion
-  });
-
-  showNativeNotification("Registro creado", {
-    body: `${nombre} agregado`,
-    icon: "./img/favicon_192.png"
-  });
-
-  numero.value = nombre.value = categoria.value = nivel.value = descripcion.value = "";
+    if (Notification.permission === "default") {
+        Notification.requestPermission().then(p => {
+            if (p === "granted") new Notification(title, options);
+        });
+    }
 };
 
 
-// botón agregar
-btnAgregar.onclick = () => window.crear();
+// ----------------------------------------------
+// CRUD - ESCUCHAR CAMBIOS EN TIEMPO REAL
+// ----------------------------------------------
+onSnapshot(itemsRef, (snapshot) => {
+    const lista = document.getElementById("lista");
+    if (!lista) return;
 
+    lista.innerHTML = "";
 
-// ------------------------------------------------
-// 🔥 NOTIFICACIONES FCM
-// ------------------------------------------------
-async function solicitarPermiso() {
-  const permiso = await Notification.requestPermission();
-  if (permiso !== "granted") {
-      alert("Debes permitir notificaciones");
-      return;
-  }
+    snapshot.forEach(docu => {
+        const d = docu.data();
 
-  const token = await getToken(window.messaging, {
-    vapidKey: "BPdlJHTy6fXvmE7nm0j-5l9oEYOz6LyHmLkCkqM_3woXLozwTeVRsYoVezV5CJ6baYkWzmp1EYB3VuSOMqgkpmg"
-  });
+        const li = document.createElement("li");
+        li.style = "font-size:18px; margin:6px 0; list-style:none;";
+        li.innerHTML = `
+            <div style="display:flex; gap:12px; align-items:center; justify-content:space-between; width:100%;">
+                <div>
+                    <strong>${d.numero}</strong> - ${d.nombre} <br>
+                    <small>${d.categoria} | Nivel: ${d.nivel}</small><br>
+                    <span>${d.descripcion}</span>
+                </div>
+                <button data-id="${docu.id}" class="btn-eliminar">❌</button>
+            </div>
+        `;
+        lista.appendChild(li);
+    });
 
-  console.log("TOKEN FCM:", token);
+    // botones eliminar
+    document.querySelectorAll(".btn-eliminar").forEach(btn => {
+        btn.onclick = async (e) => {
+            const id = e.target.getAttribute("data-id");
+            if (!confirm("¿Eliminar registro?")) return;
 
-  showNativeNotification("Permisos activados", {
-    body: "Tu dispositivo ahora recibe notificaciones",
-    icon: "./img/favicon_192.png"
-  });
-}
-
-// activar solo si el usuario da clic real
-document.addEventListener("click", solicitarPermiso, { once: true });
-
-
-// Mensajes foreground
-onMessage(window.messaging, (payload) => {
-  showNativeNotification(payload.notification.title, {
-    body: payload.notification.body,
-    icon: "./img/favicon_192.png"
-  });
+            await deleteDoc(doc(window.db, "items", id));
+            showNativeNotification("Registro eliminado", {
+                body: "El item fue eliminado correctamente.",
+                icon: "./img/favicon_192.png"
+            });
+        };
+    });
 });
 
 
-// ------------------------------------------------
+// ----------------------------------------------
+// CRUD - AGREGAR
+// ----------------------------------------------
+window.crear = async function () {
+
+    // ⛔ Padrino, AQUÍ estaba tu error: NUNCA reutilices nombres de variables.
+    const numeroVal = document.getElementById("numero").value.trim();
+    const nombreVal = document.getElementById("nombre").value.trim();
+    const categoriaVal = document.getElementById("categoria").value.trim();
+    const nivelVal = document.getElementById("nivel").value.trim();
+    const descripcionVal = document.getElementById("descripcion").value.trim();
+
+    if (!numeroVal || !nombreVal || !categoriaVal || !nivelVal || !descripcionVal) {
+        alert("Todos los campos son obligatorios.");
+        return;
+    }
+
+    await addDoc(itemsRef, {
+        numero: Number(numeroVal),
+        nombre: nombreVal,
+        categoria: categoriaVal,
+        nivel: Number(nivelVal),
+        descripcion: descripcionVal
+    });
+
+    // limpiar campos
+    document.getElementById("numero").value = "";
+    document.getElementById("nombre").value = "";
+    document.getElementById("categoria").value = "";
+    document.getElementById("nivel").value = "";
+    document.getElementById("descripcion").value = "";
+
+    showNativeNotification("Registro agregado", {
+        body: `${nombreVal} fue agregado correctamente.`,
+        icon: "./img/favicon_192.png"
+    });
+};
+
+
+// ----------------------------------------------
+// BOTÓN AGREGAR
+// ----------------------------------------------
+document.getElementById("btnAgregar").onclick = () => window.crear();
+
+
+// ----------------------------------------------
+// PERMISOS DE NOTIFICACIONES
+// ----------------------------------------------
+async function solicitarPermiso() {
+    const permiso = await Notification.requestPermission();
+    if (permiso !== "granted") {
+        alert("No se otorgó permiso para notificaciones.");
+        return;
+    }
+
+    const token = await getToken(window.messaging, {
+        vapidKey: "BPdlJHTy6fXvmE7nm0j-5l9oEYOz6LyHmLkCkqM_3woXLozwTeVRsYoVezV5CJ6baYkWzmp1EYB3VuSOMqgkpmg"
+    });
+
+    console.log("TOKEN FCM:", token);
+
+    showNativeNotification("Notificaciones activadas", {
+        body: "Tu dispositivo ya puede recibir mensajes.",
+        icon: "./img/favicon_192.png"
+    });
+}
+
+// pedir permiso al hacer clic en cualquier parte (solo 1 vez)
+window.addEventListener("click", solicitarPermiso, { once: true });
+
+
+// ----------------------------------------------
+// FCM - MENSAJES EN FOREGROUND
+// ----------------------------------------------
+onMessage(window.messaging, (payload) => {
+    showNativeNotification(payload.notification.title, {
+        body: payload.notification.body,
+        icon: "./img/favicon_192.png"
+    });
+});
+
+
+// ----------------------------------------------
 // SMOOTH SCROLL
-// ------------------------------------------------
-$(document).ready(function(){
-  $("#menu a").click(function(e){
-      e.preventDefault();
-      $("html,body").animate({
-          scrollTop: $($(this).attr('href')).offset().top
-      });
-  });
+// ----------------------------------------------
+$("#menu a").click(function (e) {
+    e.preventDefault();
+    $("html, body").animate({
+        scrollTop: $($(this).attr("href")).offset().top
+    });
 });
