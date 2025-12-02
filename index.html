@@ -2,10 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- viewport corregido (solucion typo maximum) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     
     <link rel="shortcut icon" type="image/png" href="img/favicon_16.png">
     <meta name="theme-color" content="#FB314E">
+    <meta name="MobileOptimazed" content="width">
+    <meta name="Handheldfriendly" content="true">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="img/favicon_16.png">
 
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
@@ -15,7 +22,6 @@
     <title>Document</title>
 </head>
 <body>
-
     <header id="main-header">
         <div class="container">
             <div id="logo">
@@ -29,9 +35,10 @@
                     <li><a href="#videos">Videos</a></li>
                     <li><a href="#footer">Contacto</a></li>
                 </ul>
-            </div>
-        </div>
+            </div> <!--end menu-->
+        </div><!--end container-->
     </header>
+    <div class="clearfix"></div>
 
     <div id="slider">
         <div class="container">
@@ -47,19 +54,45 @@
                 <img src="img/clases.png" alt="clases" />
                 <h3>Clases</h3>
                 <p>
-                <h4>Barbaro</h4>Los bárbaros son poderosos guerreros impulsados…<br>
-                <h4>Hechizero</h4>Los hechiceros ejercen una magia innata…<br>
-                <h4>Druida</h4>Los druidas pertenecen a órdenes antiguas…
+               <h4>Barbaro</h4>     
+            	Los bárbaros son poderosos guerreros impulsados ​​por fuerzas primigenas 
+                del multiverso que se manifiestan como Furia. 
+                Más que una simple emoción —y no se limita a la ira—,
+                esta Furia es la encarnación de la ferocidad de un depredador,
+                la furia de una tormenta y la agitación de un mar. <br>
+
+                <h4>Hechizero</h4>
+	            Los hechiceros ejercen una magia innata que está grabada en su ser. 
+                Algunos hechiceros desconocen el origen de su poder,
+                mientras que otros lo atribuyen a extraños sucesos de su historia personal o familiar.
+                La bendición de un dragón o una dríade al nacer un bebé,
+                o el impacto de un rayo en un cielo despejado, pueden despertar el don de un hechicero. <br>
+
+                <h4>Druida</h4>
+                Los druidas pertenecen a órdenes antiguas que invocan las fuerzas de la naturaleza.
+                Dominando la magia de los animales, las plantas y los cuatro elementos, los druidas sanan, 
+                se transforman en animales y ejercen la destrucción elemental.
                 </p>
             </div>
 
             <div class="service">
                 <img src="img/Monstruos.jpg" alt="monstruos" />
-                <h3>Monstruos</h3>
+                <h3>Mostruos</h3>
                 <p>
-                  <h4>Beholder</h4>Aberración flotante con ojos…<br>
-                  <h4>Tarrasque</h4>Uno de los monstruos más devastadores…<br>
-                  <h4>Lich</h4>Mago no-muerto inmortal…
+                  <h4>Beholder</h4>
+                  Una aberracion flotante con un gran ojo central y varios tentaculos con ojos mas pequeños.
+                  Cada ojo lanza un rayo magico diferente: desintegracion, petrificacion, miedo, somnolencia. <br>
+
+                  <h4>Tarrasque</h4>
+                  Uno de los Monstruos mas iconicos y devastadores.
+                  Una bestia colosal casi indestructible.
+                  Regenera vida, refleja hechizos y arrasa ciudades enteras con su sola presencia.
+                  Mosntruo final de muchas campañas. <br>
+
+                  <h4>Lich</h4>
+                  Un mago no-muerto que se volvio inmortal guardando su alma en una necromancia.
+                  Maestro de la magia arcana y necromancia.
+                  Generalmente aparece como villano detras de conspiraciones y ejercitos de no-muertos
                 </p>
             </div>
 
@@ -67,95 +100,140 @@
                 <img src="img/Hechizos.png" alt="hechizos" />
                 <h3>Hechizos</h3>
                 <p>
-                   <h4>FireBall</h4>Explosión ígnea…<br>
-                   <h4>Mage Hand</h4>Mano espectral…<br>
-                   <h4>Polimorfia</h4>Transformas una criatura…<br>
-                   <h4>Contra conjuro</h4>Cancela un hechizo…
+                   <h4>FireBall</h4>
+                   Lanza una explocion ignea que abarca un radio de 20 pies.
+                   hace 8d6 de daño de fuego a todas las criaturas dentro. <br>
+                   
+                   <h4>Mage Hand</h4>
+                   Creas una mano espectral que puedes controlar a distancia 30 pies.
+                   Perfecto para jugadores creativos o desconfiados. <br>
+
+                   <h4>Polimorfia</h4>
+                   Transformas a una criatura desde una raton hasta un t-rex.
+                   La criatura adquiere las estadisticas fisicas de la nueva forma, pero conserva su mente. <br>
+
+                   <h4>Contra conjuro</h4>
+                   Cancela un hechizo que alguien mas lanzo a 60 pies.
+                   Se activa de manera automatica, si no, se hace una tirada de habilidad.
+
                 </p>
             </div>
         </div>
-    </div>
+    </div> <!-- end services-->
 
-    <!-- CRUD -->
+    <div class="clearfix"></div>
+
+    <!-- ✅ CRUD Firebase agregado SIN quitar nada -->
     <section id="crud" style="padding: 20px;">
-        <div class="container">
-            <h2 class="subheader">CRUD Firebase</h2>
+    <div class="container">
+        <h2 class="subheader">CRUD Firebase</h2>
 
-            <input id="numero" type="number" placeholder="Número" required />
-            <input id="nombre" placeholder="Nombre" required />
-            <input id="categoria" placeholder="Categoría" required />
-            <input id="nivel" type="number" placeholder="Nivel" required />
-            <input id="descripcion" placeholder="Descripción" required />
+        <!-- 5 campos -->
+        <input id="numero" type="number" placeholder="Número" required />
+        <input id="nombre" placeholder="Nombre" required />
+        <input id="categoria" placeholder="Categoría" required />
+        <input id="nivel" type="number" placeholder="Nivel" required />
+        <input id="descripcion" placeholder="Descripción" required />
 
-            <button id="btnAgregar">Agregar</button>
+        <button id="btnAgregar">Agregar</button>
 
-            <ul id="lista" style="margin-top: 15px;"></ul>
-        </div>
+        <ul id="lista" style="margin-top: 15px;"></ul>
+    </div>
     </section>
 
-    <!-- VIDEOS -->
+
+    <div class="clearfix"></div>
+
     <div id="videos">
         <div class="container">
             <h2 class="subheader">Videos</h2>
 
             <div class="video">
+                <!-- Usar embed y https para evitar X-Frame-Options -->
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/OTsicWGho7c" frameborder="0" allowfullscreen></iframe>
-                <p>Como jugar Calabozos y Dragones…</p>
+
+                <p>
+                    Como jugar Calabozos y Dragones para principiantes <br>
+                    Un video introductorio que explica lo esencial D&D: Como jugar, que se necesita, el rol de DM
+                    , tiradas de dados, mecanicas basicas y mas...
+                </p>
             </div>
 
             <div class="video">
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/dDNTtlTZA0" frameborder="0" allowfullscreen></iframe>
-                <p>Introducción a D&D episodio 1…</p>
+
+                <p>
+                   Introduccion a DND episodio 1 <br>
+                   Episodio de juego casero con D&D 5e ambientado en mundo de fantasia. Muestra como fluye las ecenas de combate,
+                   narracion y desiciones de los jugadores.
+                </p>
             </div>
 
             <div class="video">
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/n5KKdwZum8Y" frameborder="0" allowfullscreen></iframe>
-                <p>¿Los dados deciden episodio 3…</p>
+
+                <p>
+                    ¿Los dados deciden Episodio 3 <br>
+                    Episodio con enfasis en la narrativa compartida, rarracion de los juegadores y desarrollo del mundo de los jugadores de como vivir la experiencia de campañas.
+                </p>
             </div>
         </div>
-    </div>
+    </div> <!-- Finaliza seccion de videos-->
 
-    <!-- FOOTER -->
+    <div class="clearfix"></div>
     <footer id="footer">
         <div class="container">
             <h2 class="subheader">Contacto</h2>
-            <p>Envíame un mensaje en mis redes sociales XD</p>
+            <p>Enviame un mnesaje en mis redes sociales XD</p>
             <ul id="networks">
-                <li><a><img src="img/twitter.png" /></a></li>
-                <li><a><img src="img/facebook.png" /></a></li>
-                <li><a><img src="img/instagram.png" /></a></li>
+                <li><a href=""><img src="img/twitter.png" alt="twitter" /></a></li>
+                <li><a href=""><img src="img/facebook.png" alt="facebook" /></a></li>
+                <li><a href=""><img src="img/instagram.png" alt="instagram" /></a></li>
             </ul>
+            <div class="clearfix"></div>
         </div>
     </footer>
 
-    <!-- Activar Firebase (solo Firestore) -->
+    <!-- ✅ Firebase + Firestore: inicialización ANTES de cargar main.js -->
     <script type="module">
-        import { initializeApp }   from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getFirestore }    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    // analytics está bien si lo quieres, no es necesario para Firestore
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyB3b42LSiKPVx6KjCNoYy4SNFPgdAORN5g",
-            authDomain: "delfos-84316.firebaseapp.com",
-            projectId: "delfos-84316",
-            storageBucket: "delfos-84316.appspot.com",
-            messagingSenderId: "308101271742",
-            appId: "1:308101271742:web:ee240676dcd05927cbceef"
-        };
+    // Pega tu firebaseConfig (ya lo tenías).
+    const firebaseConfig = {
+        apiKey: "AIzaSyB3b42LSiKPVx6KjCNoYy4SNFPgdAORN5g",
+        authDomain: "delfos-84316.firebaseapp.com",
+        projectId: "delfos-84316",
+        storageBucket: "delfos-84316.appspot.com",
+        messagingSenderId: "308101271742",
+        appId: "1:308101271742:web:ee240676dcd05927cbceef",
+        measurementId: "G-13GRZXNR3Y"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        window.db = getFirestore(app);
+    // Inicializar Firebase y Firestore
+    const app = initializeApp(firebaseConfig);
+    try { getAnalytics(app); } catch(e) { /* no crítico */ }
+    window.db = getFirestore(app);
     </script>
 
-    <!-- Tu JS -->
+    <!-- main.js COMO MÓDULO (usa window.db) -->
     <script type="module" src="main.js"></script>
 
-    <!-- Activar SW de la PWA -->
+    <!-- Botón para pedir permiso: gesto explícito del usuario -->
+    <button id="btnNotificaciones" aria-label="Activar notificaciones"
+            style="position:fixed; bottom:15px; right:15px; z-index:999; padding:10px 14px; border-radius:8px; border:none; background:#FB314E; color:#fff; cursor:pointer;">
+        Activar Notificaciones 🔔
+    </button>
+
+    <!-- Registrar el service worker PWA -->
     <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/sw.js")
-            .then(() => console.log("SW de PWA registrado"))
-            .catch(err => console.log("Error registrando SW:", err));
-        }
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('SW PWA registrado'))
+        .catch(err => console.warn('Error registrando SW PWA:', err));
+    }
     </script>
 
 </body>
