@@ -153,12 +153,9 @@ window.crear = async function () {
 // ---------- BOTÓN AGREGAR: vincular después de declarar window.crear ----------
 const btn = document.getElementById("btnAgregar");
 if (btn) {
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    window.crear();
-  }, { passive: true });
+  // Botón del CRUD
+btn.addEventListener("click", () => window.crear());
 }
-
 
 // ---------- NOTIFICACIONES: pedir permiso mediante botón visible ----------
 const btnNoti = document.getElementById("btnNotificaciones");
@@ -204,4 +201,5 @@ $(document).ready(function(){
       return false;
   });
 });
+
 
