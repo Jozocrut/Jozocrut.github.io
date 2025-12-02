@@ -1,82 +1,75 @@
-// ------------------------------------------------------------
-// 🔥 FIRESTORE (CRUD)
-// ------------------------------------------------------------
-import {
-    collection, addDoc, deleteDoc, doc, onSnapshot
+// FIRESTORE
+import { 
+    collection, addDoc, deleteDoc, doc, onSnapshot 
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// Verifica que Firestore existe
+// Asegurar que db existe
 if (!window.db) {
-    console.error("Firestore no inicializado. Revisa index.html");
+    console.error("Firestore no inicializado.");
 }
 
-// Referencia a la colección
+// Referencia
 const itemsRef = collection(window.db, "items");
 
-
-// ------------------------------------------------------------
-// 🔔 NOTIFICACIONES NATIVAS
-// ------------------------------------------------------------
+// -------------------------------------
+// NOTIFICACIONES NATIVAS
+// -------------------------------------
 const showNativeNotification = (title, options = {}) => {
     if (!("Notification" in window)) {
         console.warn("Este navegador no soporta notificaciones.");
         return;
     }
 
-    if (Notification.permission === "default") {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") new Notification(title, options);
-        });
-    } else if (Notification.permission === "granted") {
+    if (Notification.permission === "granted") {
         new Notification(title, options);
+    } else if (Notification.permission === "default") {
+        Notification.requestPermission().then((perm) => {
+            if (perm === "granted") new Notification(title, options);
+        });
     }
 };
 
-
-// ------------------------------------------------------------
-// 🟢 ESCUCHAR EN TIEMPO REAL
-// ------------------------------------------------------------
+// -------------------------------------
+// LISTAR EN TIEMPO REAL
+// -------------------------------------
 onSnapshot(itemsRef, (snapshot) => {
     const lista = document.getElementById("lista");
     lista.innerHTML = "";
 
-    snapshot.forEach(docSnap => {
-        const item = docSnap.data();
+    snapshot.forEach(docu => {
+        const item = docu.data();
 
         const li = document.createElement("li");
-        li.style = "font-size:18px; margin:6px 0; list-style:none;";
         li.innerHTML = `
-            <div style="display:flex; gap:12px; align-items:center; justify-content:space-between;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <strong>${item.numero}</strong> - ${item.nombre} <br>
+                    <strong>${item.numero}</strong> - ${item.nombre}<br>
                     <small>${item.categoria} | Nivel: ${item.nivel}</small><br>
                     <span>${item.descripcion}</span>
                 </div>
-                <button class="btn-eliminar" data-id="${docSnap.id}">❌</button>
+                <button class="btn-eliminar" data-id="${docu.id}">❌</button>
             </div>
         `;
+
         lista.appendChild(li);
     });
 
     document.querySelectorAll(".btn-eliminar").forEach(btn => {
-        btn.addEventListener("click", async (e) => {
-            const id = e.target.getAttribute("data-id");
-            if (!confirm("¿Eliminar registro?")) return;
-
-            await deleteDoc(doc(window.db, "items", id));
-
-            showNativeNotification("Registro eliminado", {
-                body: "El elemento fue eliminado correctamente.",
-                icon: "./img/favicon_192.png"
-            });
-        });
+        btn.onclick = async (e) => {
+            const id = e.target.dataset.id;
+            if (confirm("¿Eliminar?")) {
+                await deleteDoc(doc(window.db, "items", id));
+                showNativeNotification("Registro eliminado", {
+                    body: "Se eliminó correctamente"
+                });
+            }
+        };
     });
 });
 
-
-// ------------------------------------------------------------
-// 🟡 CREAR DOCUMENTO
-// ------------------------------------------------------------
+// -------------------------------------
+// AGREGAR
+// -------------------------------------
 window.crear = async () => {
     const numero = document.getElementById("numero").value.trim();
     const nombre = document.getElementById("nombre").value.trim();
@@ -85,7 +78,7 @@ window.crear = async () => {
     const descripcion = document.getElementById("descripcion").value.trim();
 
     if (!numero || !nombre || !categoria || !nivel || !descripcion) {
-        alert("Todos los campos son obligatorios.");
+        alert("Todos los campos son obligatorios");
         return;
     }
 
@@ -97,37 +90,23 @@ window.crear = async () => {
         descripcion
     });
 
-    // Borrar campos
+    showNativeNotification("Registro agregado", {
+        body: `${nombre} fue agregado correctamente`,
+        icon: "./img/favicon_192.png"
+    });
+
     document.getElementById("numero").value = "";
     document.getElementById("nombre").value = "";
     document.getElementById("categoria").value = "";
     document.getElementById("nivel").value = "";
     document.getElementById("descripcion").value = "";
-
-    showNativeNotification("Registro agregado ✔", {
-        body: `${nombre} fue agregado correctamente.`,
-        icon: "./img/favicon_192.png"
-    });
 };
 
+// Botón agregar
+document.getElementById("btnAgregar").onclick = window.crear;
 
-// ------------------------------------------------------------
-// 🟠 BOTÓN AGREGAR
-// ------------------------------------------------------------
-document.getElementById("btnAgregar").addEventListener("click", window.crear);
-
-
-// ------------------------------------------------------------
-// 🔵 SMOOTH SCROLL OPTIMIZADO (PASSIVE)
-// ------------------------------------------------------------
-$(document).ready(() => {
-    $("#menu a").on("click", function (e) {
-        e.preventDefault();
-        const destino = $(this).attr("href");
-
-        window.scrollTo({
-            top: $(destino).offset().top,
-            behavior: "smooth"
-        });
-    });
+// SMOOTH SCROLL
+$("#menu a").on("click", function(e) {
+    e.preventDefault();
+    $("html, body").animate({ scrollTop: $($(this).attr("href")).offset().top });
 });
