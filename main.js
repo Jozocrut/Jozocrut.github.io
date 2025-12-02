@@ -189,10 +189,8 @@ async function solicitarPermiso() {
 }
 
 if (btnNoti) {
-  btnNoti.addEventListener("click", (e) => {
-    e.preventDefault();
-    solicitarPermiso();
-  }, { passive: true });
+  btnNoti.addEventListener("click",
+    solicitarPermiso());
 }
 
 
@@ -206,3 +204,4 @@ $(document).ready(function(){
       return false;
   });
 });
+
