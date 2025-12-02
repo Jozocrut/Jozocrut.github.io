@@ -1,26 +1,23 @@
-// ----------------------------------------------------
-// FIRESTORE IMPORTS
-// ----------------------------------------------------
-import { 
-    collection, addDoc, deleteDoc, doc, onSnapshot 
+// ------------------------------------------------------------
+// 🔥 FIRESTORE (CRUD)
+// ------------------------------------------------------------
+import {
+    collection, addDoc, deleteDoc, doc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// ----------------------------------------------------
-// CONFIGURACIÓN FIRESTORE
-// ----------------------------------------------------
+// Verifica que Firestore existe
 if (!window.db) {
-    console.error("Firestore no está inicializado. Revisa index.html");
+    console.error("Firestore no inicializado. Revisa index.html");
 }
 
-// referencia a la colección
+// Referencia a la colección
 const itemsRef = collection(window.db, "items");
 
 
-// ----------------------------------------------------
-// 🔔 FUNCIÓN NATIVA PARA MOSTRAR NOTIFICACIONES
-// ----------------------------------------------------
-const showNativeNotification = (title, options) => {
-
+// ------------------------------------------------------------
+// 🔔 NOTIFICACIONES NATIVAS
+// ------------------------------------------------------------
+const showNativeNotification = (title, options = {}) => {
     if (!("Notification" in window)) {
         console.warn("Este navegador no soporta notificaciones.");
         return;
@@ -28,141 +25,109 @@ const showNativeNotification = (title, options) => {
 
     if (Notification.permission === "default") {
         Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                new Notification(title, options);
-            }
+            if (permission === "granted") new Notification(title, options);
         });
-    } 
-    else if (Notification.permission === "granted") {
+    } else if (Notification.permission === "granted") {
         new Notification(title, options);
     }
-    // Si es "denied", no hacemos nada
 };
 
 
-// ----------------------------------------------------
-// CRUD: ESCUCHAR CAMBIOS EN TIEMPO REAL
-// ----------------------------------------------------
+// ------------------------------------------------------------
+// 🟢 ESCUCHAR EN TIEMPO REAL
+// ------------------------------------------------------------
 onSnapshot(itemsRef, (snapshot) => {
     const lista = document.getElementById("lista");
-    if (!lista) return;
-
     lista.innerHTML = "";
 
-    snapshot.forEach(docu => {
-        const item = docu.data();
+    snapshot.forEach(docSnap => {
+        const item = docSnap.data();
 
         const li = document.createElement("li");
         li.style = "font-size:18px; margin:6px 0; list-style:none;";
         li.innerHTML = `
-            <div style="display:flex; gap:12px; align-items:center; justify-content:space-between; width:100%;">
+            <div style="display:flex; gap:12px; align-items:center; justify-content:space-between;">
                 <div>
                     <strong>${item.numero}</strong> - ${item.nombre} <br>
                     <small>${item.categoria} | Nivel: ${item.nivel}</small><br>
                     <span>${item.descripcion}</span>
                 </div>
-                <div>
-                    <button data-id="${docu.id}" class="btn-eliminar">❌</button>
-                </div>
+                <button class="btn-eliminar" data-id="${docSnap.id}">❌</button>
             </div>
         `;
         lista.appendChild(li);
     });
 
-    // EVENTO DE ELIMINAR
     document.querySelectorAll(".btn-eliminar").forEach(btn => {
-        btn.onclick = async (e) => {
+        btn.addEventListener("click", async (e) => {
             const id = e.target.getAttribute("data-id");
             if (!confirm("¿Eliminar registro?")) return;
 
-            try {
-                await deleteDoc(doc(window.db, "items", id));
+            await deleteDoc(doc(window.db, "items", id));
 
-                // 🔔 Notificación nativa
-                showNativeNotification("Registro eliminado", {
-                    body: "El elemento fue borrado correctamente.",
-                    icon: "./img/favicon_192.png"
-                });
-
-            } catch (err) {
-                console.error("Error eliminando:", err);
-                alert("Error al eliminar.");
-            }
-        };
+            showNativeNotification("Registro eliminado", {
+                body: "El elemento fue eliminado correctamente.",
+                icon: "./img/favicon_192.png"
+            });
+        });
     });
 });
 
 
-// ----------------------------------------------------
-// CRUD: CREAR DOCUMENTO
-// ----------------------------------------------------
-window.crear = async function () {
-
-    const numeroInput = document.getElementById("numero");
-    const nombreInput = document.getElementById("nombre");
-    const categoriaInput = document.getElementById("categoria");
-    const nivelInput = document.getElementById("nivel");
-    const descripcionInput = document.getElementById("descripcion");
-
-    const numero = numeroInput.value.trim();
-    const nombre = nombreInput.value.trim();
-    const categoria = categoriaInput.value.trim();
-    const nivel = nivelInput.value.trim();
-    const descripcion = descripcionInput.value.trim();
+// ------------------------------------------------------------
+// 🟡 CREAR DOCUMENTO
+// ------------------------------------------------------------
+window.crear = async () => {
+    const numero = document.getElementById("numero").value.trim();
+    const nombre = document.getElementById("nombre").value.trim();
+    const categoria = document.getElementById("categoria").value.trim();
+    const nivel = document.getElementById("nivel").value.trim();
+    const descripcion = document.getElementById("descripcion").value.trim();
 
     if (!numero || !nombre || !categoria || !nivel || !descripcion) {
         alert("Todos los campos son obligatorios.");
         return;
     }
 
-    try {
-        await addDoc(itemsRef, {
-            numero: Number(numero),
-            nombre,
-            categoria,
-            nivel: Number(nivel),
-            descripcion
-        });
+    await addDoc(itemsRef, {
+        numero: Number(numero),
+        nombre,
+        categoria,
+        nivel: Number(nivel),
+        descripcion
+    });
 
-        // 🔔 Notificación nativa
-        showNativeNotification("Registro agregado", {
-            body: `${nombre} fue guardado correctamente.`,
-            icon: "./img/favicon_192.png"
-        });
+    // Borrar campos
+    document.getElementById("numero").value = "";
+    document.getElementById("nombre").value = "";
+    document.getElementById("categoria").value = "";
+    document.getElementById("nivel").value = "";
+    document.getElementById("descripcion").value = "";
 
-        // limpiar
-        numeroInput.value = "";
-        nombreInput.value = "";
-        categoriaInput.value = "";
-        nivelInput.value = "";
-        descripcionInput.value = "";
-
-    } catch (err) {
-        console.error("Error agregando:", err);
-        alert("No se pudo agregar el registro.");
-    }
+    showNativeNotification("Registro agregado ✔", {
+        body: `${nombre} fue agregado correctamente.`,
+        icon: "./img/favicon_192.png"
+    });
 };
 
 
-// ----------------------------------------------------
-// BOTÓN AGREGAR
-// ----------------------------------------------------
-const btn = document.getElementById("btnAgregar");
-if (btn) {
-    btn.onclick = () => window.crear();
-}
+// ------------------------------------------------------------
+// 🟠 BOTÓN AGREGAR
+// ------------------------------------------------------------
+document.getElementById("btnAgregar").addEventListener("click", window.crear);
 
 
-// ----------------------------------------------------
-// SMOOTH SCROLL (LO MANTENEMOS PERO MÁS LIMPIO)
-// ----------------------------------------------------
+// ------------------------------------------------------------
+// 🔵 SMOOTH SCROLL OPTIMIZADO (PASSIVE)
+// ------------------------------------------------------------
 $(document).ready(() => {
     $("#menu a").on("click", function (e) {
         e.preventDefault();
-
         const destino = $(this).attr("href");
-        $("html, body").animate({
-            scrollTop: $(destino).offset().top
-        }, 500);
+
+        window.scrollTo({
+            top: $(destino).offset().top,
+            behavior: "smooth"
+        });
     });
 });
