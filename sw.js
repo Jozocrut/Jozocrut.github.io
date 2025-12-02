@@ -1,17 +1,10 @@
-//const { cache } = require("react");
+// sw.js - Service Worker PWA limpio y básico
 
 const CACHE_NAME = 'v1_cache_JosuePWA';
-
-var urlToCache = [
+const urlsToCache = [
     './',
+    './index.html',
     './css/styles.css',
-    './img/favicon.png',
-    './img/clases.jpg',
-    './img/Hechizos.png',
-    './img/Monstruos.jpg',
-    './img/twitter.png',
-    './img/instagram.png',
-    './img/facebook.png',
     './img/favicon_16.png',
     './img/favicon_32.png',
     './img/favicon_64.png',
@@ -19,52 +12,39 @@ var urlToCache = [
     './img/favicon_128.png',
     './img/favicon_192.png',
     './img/favicon_256.png',
-    './img/favicon_385.png',
     './img/favicon_512.png',
-    './img/favicon_1024.png'
+    './img/clases.png',
+    './img/Monstruos.jpg',
+    './img/Hechizos.png'
 ];
 
-self.addEventListener('install',e =>{
-    e.waitUntil(
+self.addEventListener('install', event => {
+    event.waitUntil(
         caches.open(CACHE_NAME)
-        .then(cache =>{
-            return cache.addAll(urlToCache)
-            .then(()=>{
-                self.skipWainting();
+            .then(cache => cache.addAll(urlsToCache))
+            .then(() => self.skipWaiting())
+            .catch(err => console.warn('Error al cachear durante install:', err))
+    );
+});
+
+self.addEventListener('activate', event => {
+    const cacheWhitelist = [CACHE_NAME];
+    event.waitUntil(
+        caches.keys().then(keyList =>
+            Promise.all(keyList.map(key => {
+                if (!cacheWhitelist.includes(key)) return caches.delete(key);
+            }))
+        ).then(() => self.clients.claim())
+    );
+});
+
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request)
+        .then(response => {
+            return response || fetch(event.request).catch(() => {
+                // fallback si quieres: return caches.match('/offline.html')
             });
         })
-        .catch(err => console.log('No se a registrado el cache',err))
     );
-});
-
-self.addEventListener('activate',e =>{
-    const cacheWhitelist = [CACHE_NAME];
-    e.waitUntil(
-        caches.keys()
-        .then(cacheNames => {
-    return Promise.all(
-        cacheNames.map(cacheName => {
-                    if(cacheWhitelist.indexOf(cacheName) === -1){
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-
-        })
-        .then(() =>{
-            self.clients.claim();
-        })
-    );
-});
-
-self.addEventListener('fetch', e => {
-    e.respondWith(
-        caches.match(e.request)
-        .then(res =>{
-            if(res){
-                return res;
-            }
-            return fetch(e.request);
-        })
-    )
 });
