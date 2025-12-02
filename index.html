@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-
-    <title>Document</title>
-
-    <link rel="shortcut icon" href="img/favicon_16.png">
+    
+    <link rel="shortcut icon" type="image/png" href="img/favicon_16.png">
     <meta name="theme-color" content="#FB314E">
-    <meta name="mobile-web-app-capable" content="yes">
 
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-</head>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <title>Document</title>
+</head>
 <body>
 
-    <!-- ⭐⭐⭐ TU FRONTEND SE MANTUVO INTACTO ⭐⭐⭐ -->
     <header id="main-header">
         <div class="container">
             <div id="logo">
@@ -35,16 +33,50 @@
         </div>
     </header>
 
-    <div class="clearfix"></div>
-
     <div id="slider">
-        <div class="container"><h2>Dungeons & Dragons</h2></div>
+        <div class="container">
+            <h2>Dungeons & Dragons</h2>
+        </div>
     </div>
 
-    <!-- ⭐⭐⭐ CONTENIDO ORIGINAL INTACTO ⭐⭐⭐ -->
-    <div id="services"> ... TODO IGUAL ... </div>
+    <div id="services">
+        <div class="container">
+            <h2 class="subheader">Contenido</h2>
 
-    <!-- ---------- CRUD (no se movió tu diseño) ---------- -->
+            <div class="service">
+                <img src="img/clases.png" alt="clases" />
+                <h3>Clases</h3>
+                <p>
+                <h4>Barbaro</h4>Los bárbaros son poderosos guerreros impulsados…<br>
+                <h4>Hechizero</h4>Los hechiceros ejercen una magia innata…<br>
+                <h4>Druida</h4>Los druidas pertenecen a órdenes antiguas…
+                </p>
+            </div>
+
+            <div class="service">
+                <img src="img/Monstruos.jpg" alt="monstruos" />
+                <h3>Monstruos</h3>
+                <p>
+                  <h4>Beholder</h4>Aberración flotante con ojos…<br>
+                  <h4>Tarrasque</h4>Uno de los monstruos más devastadores…<br>
+                  <h4>Lich</h4>Mago no-muerto inmortal…
+                </p>
+            </div>
+
+            <div class="service">
+                <img src="img/Hechizos.png" alt="hechizos" />
+                <h3>Hechizos</h3>
+                <p>
+                   <h4>FireBall</h4>Explosión ígnea…<br>
+                   <h4>Mage Hand</h4>Mano espectral…<br>
+                   <h4>Polimorfia</h4>Transformas una criatura…<br>
+                   <h4>Contra conjuro</h4>Cancela un hechizo…
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CRUD -->
     <section id="crud" style="padding: 20px;">
         <div class="container">
             <h2 class="subheader">CRUD Firebase</h2>
@@ -61,14 +93,45 @@
         </div>
     </section>
 
-    <!-- Videos y Footer INTACTOS -->
-    <div id="videos"> ... </div>
-    <footer id="footer"> ... </footer>
+    <!-- VIDEOS -->
+    <div id="videos">
+        <div class="container">
+            <h2 class="subheader">Videos</h2>
 
-    <!-- ---------- FIREBASE SOLO PARA FIRESTORE ---------- -->
+            <div class="video">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/OTsicWGho7c" frameborder="0" allowfullscreen></iframe>
+                <p>Como jugar Calabozos y Dragones…</p>
+            </div>
+
+            <div class="video">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/dDNTtlTZA0" frameborder="0" allowfullscreen></iframe>
+                <p>Introducción a D&D episodio 1…</p>
+            </div>
+
+            <div class="video">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/n5KKdwZum8Y" frameborder="0" allowfullscreen></iframe>
+                <p>¿Los dados deciden episodio 3…</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer id="footer">
+        <div class="container">
+            <h2 class="subheader">Contacto</h2>
+            <p>Envíame un mensaje en mis redes sociales XD</p>
+            <ul id="networks">
+                <li><a><img src="img/twitter.png" /></a></li>
+                <li><a><img src="img/facebook.png" /></a></li>
+                <li><a><img src="img/instagram.png" /></a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Activar Firebase (solo Firestore) -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { initializeApp }   from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getFirestore }    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB3b42LSiKPVx6KjCNoYy4SNFPgdAORN5g",
@@ -83,16 +146,16 @@
         window.db = getFirestore(app);
     </script>
 
-    <!-- ---------- MAIN.JS LIMPIO ---------- -->
+    <!-- Tu JS -->
     <script type="module" src="main.js"></script>
 
-    <!-- ---------- SW PARA PWA ---------- -->
+    <!-- Activar SW de la PWA -->
     <script>
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("sw.js")
-        .then(() => console.log("SW registrado"))
-        .catch(err => console.error("Error SW:", err));
-    }
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/sw.js")
+            .then(() => console.log("SW de PWA registrado"))
+            .catch(err => console.log("Error registrando SW:", err));
+        }
     </script>
 
 </body>
