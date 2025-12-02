@@ -16,7 +16,36 @@ if (typeof window.db === "undefined" || typeof window.messaging === "undefined")
 // referencia a Firestore
 const itemsRef = collection(window.db, "items");
 
-// ---------- CRUD: Escuchar cambios en tiempo real ----------
+
+// ------------------------------------------------
+// 🔔 FUNCIÓN NATIVA PARA MOSTRAR NOTIFICACIONES
+// ------------------------------------------------
+const showNativeNotification = (title, options) => {
+    // 1. Verificar soporte
+    if (!("Notification" in window)) {
+        console.warn("Este navegador no soporta notificaciones de escritorio.");
+        return;
+    }
+
+    // 2. Solicitar permiso si está en default
+    if (Notification.permission === "default") {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                new Notification(title, options);
+            }
+        });
+    } 
+    // 3. Si ya estaba concedido, mostrar
+    else if (Notification.permission === "granted") {
+        new Notification(title, options);
+    }
+    // Si está "denied" no hace nada
+};
+
+
+// ------------------------------------------------
+// ---------- CRUD: Escuchar cambios en tiempo real
+// ------------------------------------------------
 onSnapshot(itemsRef, (snapshot) => {
   const lista = document.getElementById("lista");
   if (!lista) return;
@@ -25,20 +54,14 @@ onSnapshot(itemsRef, (snapshot) => {
   snapshot.forEach(docu => {
     const item = docu.data();
 
-    const numero = item.numero ?? "";
-    const nombre = item.nombre ?? "";
-    const categoria = item.categoria ?? "";
-    const nivel = item.nivel ?? "";
-    const descripcion = item.descripcion ?? "";
-
     const li = document.createElement("li");
     li.style = "font-size:18px; margin:6px 0; list-style:none;";
     li.innerHTML = `
       <div style="display:flex; gap:12px; align-items:center; justify-content:space-between; width:100%;">
         <div>
-          <strong>${numero}</strong> - ${nombre} <br>
-          <small>${categoria} | Nivel: ${nivel}</small><br>
-          <span>${descripcion}</span>
+          <strong>${item.numero}</strong> - ${item.nombre} <br>
+          <small>${item.categoria} | Nivel: ${item.nivel}</small><br>
+          <span>${item.descripcion}</span>
         </div>
         <div>
           <button data-id="${docu.id}" class="btn-eliminar">❌</button>
@@ -63,7 +86,10 @@ onSnapshot(itemsRef, (snapshot) => {
   });
 });
 
-// ---------- CRUD: función crear ----------
+
+// ------------------------------------------------
+// ---------- CRUD: función crear
+// ------------------------------------------------
 window.crear = async function () {
   const numero = document.getElementById("numero").value.trim();
   const nombre = document.getElementById("nombre").value.trim();
@@ -85,16 +111,25 @@ window.crear = async function () {
       descripcion
     });
 
+    // ----------- 🔔 Notificación nativa al agregar -------------
+    showNativeNotification("Registro agregado", {
+        body: `${nombre} fue agregado correctamente`,
+        icon: "./img/favicon_192.png"
+    });
+
+    // limpiar campos
     document.getElementById("numero").value = "";
     document.getElementById("nombre").value = "";
     document.getElementById("categoria").value = "";
     document.getElementById("nivel").value = "";
     document.getElementById("descripcion").value = "";
+
   } catch (err) {
     console.error("Error agregando:", err);
     alert("Error al agregar. Revisa la consola.");
   }
 };
+
 
 // botón agregar
 const btn = document.getElementById("btnAgregar");
@@ -102,7 +137,10 @@ if (btn) {
   btn.addEventListener("click", () => window.crear());
 }
 
-// ---------- NOTIFICACIONES PUSH ----------
+
+// ------------------------------------------------
+// 🔥 NOTIFICACIONES PUSH FCM
+// ------------------------------------------------
 
 async function solicitarPermiso() {
   console.log("Solicitando permiso para notificaciones...");
@@ -118,27 +156,31 @@ async function solicitarPermiso() {
   });
 
   console.log("TOKEN FCM:", token);
-  alert("Token generado (revísalo en consola)");
 
-  // Para guardar el token en Firestore descomenta:
-  // await addDoc(collection(window.db, "tokens"), { token });
+  showNativeNotification("Notificaciones activadas 🔔", {
+      body: "Tu dispositivo ya puede recibir mensajes.",
+      icon: "./img/favicon_192.png"
+  });
 }
 
-// pedir permiso al cargar
+// pedir permiso con un clic
 window.addEventListener("click", solicitarPermiso, { once: true });
 
 
-// cuando la app está abierta y llega un mensaje
+// Cuando llega un mensaje con la app abierta
 onMessage(window.messaging, (payload) => {
   console.log("Notificación en foreground:", payload);
 
-  new Notification(payload.notification.title, {
+  showNativeNotification(payload.notification.title, {
       body: payload.notification.body,
       icon: "./img/favicon_192.png"
   });
 });
 
+
+// ------------------------------------------------
 // ---------- SMOOTH SCROLL ----------
+// ------------------------------------------------
 $(document).ready(function(){
   $("#menu a").click(function(e){
       e.preventDefault();
@@ -148,4 +190,3 @@ $(document).ready(function(){
       return false;
   });
 });
-
