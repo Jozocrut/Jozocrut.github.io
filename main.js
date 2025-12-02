@@ -100,12 +100,22 @@ document.getElementById("btnAgregar").addEventListener("click", () => window.cre
 // pedir permiso
 window.addEventListener("click", () => Notification.requestPermission(), { once: true });
 
-// smooth scroll
-$(document).ready(function(){
-    $("#menu a").click(function(e){
-        e.preventDefault();
-        $("html,body").animate({
-            scrollTop: $($(this).attr('href')).offset().top
-        });
+
+// -------------------------------
+// SMOOTH SCROLL SIN JQUERY (no warnings)
+// -------------------------------
+document.querySelectorAll("#menu a").forEach(enlace => {
+  enlace.addEventListener("click", (e) => {
+    e.preventDefault();
+    const destino = document.querySelector(enlace.getAttribute("href"));
+    if (!destino) return;
+
+    window.scrollTo({
+      top: destino.offsetTop,
+      behavior: "smooth"
     });
+  }, { passive: true }); // <- ADIÓS WARNING
 });
+
+});
+
