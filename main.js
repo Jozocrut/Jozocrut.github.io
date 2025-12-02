@@ -116,6 +116,3 @@ document.querySelectorAll("#menu a").forEach(enlace => {
     });
   }, { passive: true }); // <- ADIÓS WARNING
 });
-
-});
-
