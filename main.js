@@ -1,183 +1,111 @@
-// ----------------------------------------------
-// IMPORTS FIRESTORE + MESSAGING
-// ----------------------------------------------
-import {
-    collection, addDoc, deleteDoc, doc, onSnapshot
+import { 
+  collection, addDoc, deleteDoc, doc, onSnapshot 
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-import {
-    getMessaging, getToken, onMessage
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-messaging.js";
-
-
-// ----------------------------------------------
-// VERIFICAR QUE FIREBASE ESTÉ INICIALIZADO
-// ----------------------------------------------
-if (!window.db) {
-    console.error("Firestore no está inicializado. Revisa index.html");
-}
-if (!window.messaging) {
-    // Si no existe, lo creamos aquí
-    window.messaging = getMessaging();
-}
-
-
-// ----------------------------------------------
-// COLECCIÓN FIRESTORE
-// ----------------------------------------------
-const itemsRef = collection(window.db, "items");
-
-
-// ----------------------------------------------
-// FUNCIÓN GENERAL DE NOTIFICACIONES
-// ----------------------------------------------
-const showNativeNotification = (title, options = {}) => {
+// ⭐ Función de notificación nativa
+const showNativeNotification = (title, options) => {
     if (!("Notification" in window)) return;
 
-    if (Notification.permission === "granted") {
-        new Notification(title, options);
-        return;
-    }
-
     if (Notification.permission === "default") {
-        Notification.requestPermission().then(p => {
-            if (p === "granted") new Notification(title, options);
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                new Notification(title, options);
+            }
         });
+    } else if (Notification.permission === "granted") {
+        new Notification(title, options);
     }
 };
 
+// referencia
+const itemsRef = collection(window.db, "items");
 
-// ----------------------------------------------
-// CRUD - ESCUCHAR CAMBIOS EN TIEMPO REAL
-// ----------------------------------------------
+// LISTAR en tiempo real
 onSnapshot(itemsRef, (snapshot) => {
     const lista = document.getElementById("lista");
-    if (!lista) return;
-
     lista.innerHTML = "";
 
     snapshot.forEach(docu => {
-        const d = docu.data();
+        const item = docu.data();
 
         const li = document.createElement("li");
         li.style = "font-size:18px; margin:6px 0; list-style:none;";
         li.innerHTML = `
-            <div style="display:flex; gap:12px; align-items:center; justify-content:space-between; width:100%;">
+            <div style="display:flex; justify-content:space-between;">
                 <div>
-                    <strong>${d.numero}</strong> - ${d.nombre} <br>
-                    <small>${d.categoria} | Nivel: ${d.nivel}</small><br>
-                    <span>${d.descripcion}</span>
+                    <strong>${item.numero}</strong> - ${item.nombre}<br>
+                    <small>${item.categoria} | Nivel: ${item.nivel}</small><br>
+                    <span>${item.descripcion}</span>
                 </div>
+
                 <button data-id="${docu.id}" class="btn-eliminar">❌</button>
             </div>
         `;
         lista.appendChild(li);
     });
 
-    // botones eliminar
     document.querySelectorAll(".btn-eliminar").forEach(btn => {
-        btn.onclick = async (e) => {
-            const id = e.target.getAttribute("data-id");
-            if (!confirm("¿Eliminar registro?")) return;
-
+        btn.addEventListener("click", async (e) => {
+            const id = e.currentTarget.getAttribute("data-id");
+            if (!confirm("¿Eliminar?")) return;
             await deleteDoc(doc(window.db, "items", id));
-            showNativeNotification("Registro eliminado", {
-                body: "El item fue eliminado correctamente.",
-                icon: "./img/favicon_192.png"
-            });
-        };
+        });
     });
 });
 
-
-// ----------------------------------------------
-// CRUD - AGREGAR
-// ----------------------------------------------
+// CREAR
 window.crear = async function () {
+    const numero = numeroInput.value.trim();
+    const nombre = nombreInput.value.trim();
+    const categoria = categoriaInput.value.trim();
+    const nivel = nivelInput.value.trim();
+    const descripcion = descripcionInput.value.trim();
 
-    // ⛔ Padrino, AQUÍ estaba tu error: NUNCA reutilices nombres de variables.
-    const numeroVal = document.getElementById("numero").value.trim();
-    const nombreVal = document.getElementById("nombre").value.trim();
-    const categoriaVal = document.getElementById("categoria").value.trim();
-    const nivelVal = document.getElementById("nivel").value.trim();
-    const descripcionVal = document.getElementById("descripcion").value.trim();
-
-    if (!numeroVal || !nombreVal || !categoriaVal || !nivelVal || !descripcionVal) {
-        alert("Todos los campos son obligatorios.");
+    if (!numero || !nombre || !categoria || !nivel || !descripcion) {
+        alert("Todos los campos son obligatorios");
         return;
     }
 
     await addDoc(itemsRef, {
-        numero: Number(numeroVal),
-        nombre: nombreVal,
-        categoria: categoriaVal,
-        nivel: Number(nivelVal),
-        descripcion: descripcionVal
+        numero: Number(numero),
+        nombre,
+        categoria,
+        nivel: Number(nivel),
+        descripcion
     });
 
-    // limpiar campos
-    document.getElementById("numero").value = "";
-    document.getElementById("nombre").value = "";
-    document.getElementById("categoria").value = "";
-    document.getElementById("nivel").value = "";
-    document.getElementById("descripcion").value = "";
-
-    showNativeNotification("Registro agregado", {
-        body: `${nombreVal} fue agregado correctamente.`,
+    // ⭐ Notificación
+    showNativeNotification("Nuevo contenido agregado", {
+        body: `Se agregó: ${nombre}`,
         icon: "./img/favicon_192.png"
     });
+
+    numeroInput.value = "";
+    nombreInput.value = "";
+    categoriaInput.value = "";
+    nivelInput.value = "";
+    descripcionInput.value = "";
 };
 
+// Inputs
+const numeroInput = document.getElementById("numero");
+const nombreInput = document.getElementById("nombre");
+const categoriaInput = document.getElementById("categoria");
+const nivelInput = document.getElementById("nivel");
+const descripcionInput = document.getElementById("descripcion");
 
-// ----------------------------------------------
-// BOTÓN AGREGAR
-// ----------------------------------------------
-document.getElementById("btnAgregar").onclick = () => window.crear();
+// botón
+document.getElementById("btnAgregar").addEventListener("click", () => window.crear());
 
+// pedir permiso
+window.addEventListener("click", () => Notification.requestPermission(), { once: true });
 
-// ----------------------------------------------
-// PERMISOS DE NOTIFICACIONES
-// ----------------------------------------------
-async function solicitarPermiso() {
-    const permiso = await Notification.requestPermission();
-    if (permiso !== "granted") {
-        alert("No se otorgó permiso para notificaciones.");
-        return;
-    }
-
-    const token = await getToken(window.messaging, {
-        vapidKey: "BPdlJHTy6fXvmE7nm0j-5l9oEYOz6LyHmLkCkqM_3woXLozwTeVRsYoVezV5CJ6baYkWzmp1EYB3VuSOMqgkpmg"
-    });
-
-    console.log("TOKEN FCM:", token);
-
-    showNativeNotification("Notificaciones activadas", {
-        body: "Tu dispositivo ya puede recibir mensajes.",
-        icon: "./img/favicon_192.png"
-    });
-}
-
-// pedir permiso al hacer clic en cualquier parte (solo 1 vez)
-window.addEventListener("click", solicitarPermiso, { once: true });
-
-
-// ----------------------------------------------
-// FCM - MENSAJES EN FOREGROUND
-// ----------------------------------------------
-onMessage(window.messaging, (payload) => {
-    showNativeNotification(payload.notification.title, {
-        body: payload.notification.body,
-        icon: "./img/favicon_192.png"
-    });
-});
-
-
-// ----------------------------------------------
-// SMOOTH SCROLL
-// ----------------------------------------------
-$("#menu a").click(function (e) {
-    e.preventDefault();
-    $("html, body").animate({
-        scrollTop: $($(this).attr("href")).offset().top
+// smooth scroll
+$(document).ready(function(){
+    $("#menu a").click(function(e){
+        e.preventDefault();
+        $("html,body").animate({
+            scrollTop: $($(this).attr('href')).offset().top
+        });
     });
 });
